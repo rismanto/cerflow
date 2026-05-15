@@ -75,7 +75,7 @@ include 'partials/navbar.php';
                             👁 Preview Map
                         </a>
                         <button onclick="saveToDB()" class="bg-blue-700 text-white px-5 py-2 text-[10px] font-black uppercase tracking-widest shadow hover:bg-blue-800 transition-all">
-                            💾 Publikasikan Map
+                            💾 Simpan Map
                         </button>
                     </div>
                 </div>
