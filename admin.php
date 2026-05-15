@@ -74,6 +74,9 @@ include 'partials/navbar.php';
                         <a id="btn-preview-map" href="#" target="_blank" class="hidden bg-white text-indigo-700 border border-indigo-200 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 hover:text-white transition-all shadow-sm">
                             👁 Preview Map
                         </a>
+                        <button onclick="saveToDB()" class="bg-blue-700 text-white px-5 py-2 text-[10px] font-black uppercase tracking-widest shadow hover:bg-blue-800 transition-all">
+                            💾 Publikasikan Map
+                        </button>
                     </div>
                 </div>
 

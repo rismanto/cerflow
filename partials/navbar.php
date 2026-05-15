@@ -44,7 +44,6 @@ $navContext = isset($navContext) ? $navContext : 'admin'; // 'admin' | 'logs' | 
                 <a href="logs.php" class="text-sm font-bold text-slate-600 hover:text-blue-700 hover:bg-blue-50 px-4 py-2 border border-transparent hover:border-blue-200 transition-all">📝 Log Aktivitas</a>
                 <a href="report.php" class="text-sm font-bold text-slate-600 hover:text-blue-700 hover:bg-blue-50 px-4 py-2 border border-transparent hover:border-blue-200 transition-all">📊 Laporan Nilai</a>
                 <a href="settings.php" class="text-sm font-bold text-slate-600 hover:text-blue-700 hover:bg-blue-50 px-4 py-2 border border-transparent hover:border-blue-200 transition-all">⚙️ Settings</a>
-                <button onclick="saveToDB()" class="bg-blue-700 text-white px-6 py-2 text-sm font-bold shadow hover:bg-blue-800 transition-all">💾 Publikasikan Map</button>
             <?php else: ?>
                 <!-- Logs / Report / Users page navbar — no publish button -->
                 <a href="maps.php" class="text-sm font-bold <?php echo $navContext === 'maps' ? 'text-blue-700 border-b-2 border-blue-700' : 'text-slate-600 hover:text-blue-700'; ?> px-4 py-2 transition-all">📚 Materi</a>
