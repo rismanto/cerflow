@@ -37,6 +37,7 @@ The easiest way to run Cerflow is using Docker. This will automatically set up t
 
 3. **Access the App**:
    - Web App: [http://localhost:8080](http://localhost:8080)
+   - phpMyAdmin: [http://localhost:8081](http://localhost:8081)
    - Database: Accessible on port `3306`
    - Default Login: `admin` / `admin123`
 
