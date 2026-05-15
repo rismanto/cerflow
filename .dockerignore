@@ -1,0 +1,10 @@
+.git
+.dockerignore
+Dockerfile
+docker-compose.yml
+scratch/
+database.sql
+seed_maps.sql
+README.md
+cerflow_developer_docs.md
+AI_HANDOFF.md

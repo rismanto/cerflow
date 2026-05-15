@@ -5,10 +5,17 @@
  * Handles the connection to the MySQL database using PDO.
  */
 class Database {
-    private $host = "localhost";
-    private $db_name = "cer_flow_db";
-    private $username = "root";
-    private $password = "";
+    private $host;
+    private $db_name;
+    private $username;
+    private $password;
+
+    public function __construct() {
+        $this->host = getenv('DB_HOST') ?: "localhost";
+        $this->db_name = getenv('DB_NAME') ?: "cer_flow_db";
+        $this->username = getenv('DB_USER') ?: "root";
+        $this->password = getenv('DB_PASS') ?: "";
+    }
     public $conn;
 
     /**

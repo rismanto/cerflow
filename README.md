@@ -20,7 +20,29 @@ Cerflow is a web-based learning platform designed to help students practice scie
 - **Real-time Feedback**: Learn from mistakes with color-coded connection validation (if enabled by teacher).
 - **Submission History**: Review past attempts and see how their reasoning has evolved.
 
-## 🛠️ Technology Stack
+## 🐳 Docker Setup (Recommended)
+
+The easiest way to run Cerflow is using Docker. This will automatically set up the PHP 8.2 environment and a MySQL 8.0 database.
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/rismanto/cerflow.git
+   cd cerflow
+   ```
+
+2. **Run with Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Access the App**:
+   - Web App: [http://localhost:8080](http://localhost:8080)
+   - Database: Accessible on port `3306`
+   - Default Login: `admin` / `admin123`
+
+*The database is automatically initialized with the schema and seed data from `database.sql`.*
+
+## 🛠️ Manual Installation (XAMPP/Laragon)
 
 | Layer | Technology |
 |---|---|
