@@ -18,21 +18,30 @@ include 'partials/navbar.php';
 ?>
 
 <div class="max-w-6xl mx-auto p-8 pb-24">
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-3xl font-black text-slate-800 tracking-tight uppercase">User <span class="text-blue-700">Management</span></h2>
-            <p class="text-sm text-slate-500 font-bold uppercase tracking-widest mt-2">Add, edit, or remove system users</p>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div class="flex-1 w-full md:w-auto">
+            <div class="flex gap-3">
+                <div class="relative flex-1 max-w-sm">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+                    <input type="text" id="search-input" oninput="renderUsers()" placeholder="Cari nama atau username..." class="w-full bg-white border-2 border-slate-300 pl-10 pr-4 py-3 text-sm font-bold focus:border-blue-600 outline-none transition-all shadow-sm">
+                </div>
+                <select id="role-filter" onchange="renderUsers()" class="bg-white border-2 border-slate-300 px-4 py-3 text-sm font-bold focus:border-blue-600 outline-none transition-all shadow-sm cursor-pointer">
+                    <option value="all">Semua Role</option>
+                    <option value="guru">Guru (Admin)</option>
+                    <option value="siswa">Siswa</option>
+                </select>
+            </div>
         </div>
-        <div class="flex gap-3">
-            <a href="api.php?action=download_template" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-3 text-sm font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">
-                📥 Template CSV
+        <div class="flex gap-3 w-full md:w-auto">
+            <a href="api.php?action=download_template" class="flex-1 md:flex-none text-center bg-white border-2 border-slate-300 text-slate-700 px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                📥 Template
             </a>
-            <button onclick="document.getElementById('csv-input').click()" class="bg-stone-800 text-white px-6 py-3 text-sm font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm">
-                📤 Import CSV
+            <button onclick="document.getElementById('csv-input').click()" class="flex-1 md:flex-none bg-stone-800 text-white px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm">
+                📤 Import
             </button>
             <input type="file" id="csv-input" accept=".csv" class="hidden" onchange="importCSV(this)">
-            <button onclick="openUserModal()" class="bg-blue-700 text-white px-8 py-3 text-sm font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-sm">
-                + Tambah User
+            <button onclick="openUserModal()" class="flex-1 md:flex-none bg-blue-700 text-white px-8 py-3 text-xs font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-sm">
+                + User
             </button>
         </div>
     </div>
@@ -45,6 +54,7 @@ include 'partials/navbar.php';
                     <th class="px-6 py-4 border-r border-slate-700">Username</th>
                     <th class="px-6 py-4 border-r border-slate-700">Nama Lengkap</th>
                     <th class="px-6 py-4 border-r border-slate-700 text-center">Role</th>
+                    <th class="px-6 py-4 border-r border-slate-700">Gemini API Key</th>
                     <th class="px-6 py-4 text-right">Actions</th>
                 </tr>
             </thead>
@@ -87,6 +97,11 @@ include 'partials/navbar.php';
                     <option value="guru">Guru (Admin)</option>
                 </select>
             </div>
+
+            <div class="mb-8">
+                <label class="text-xs uppercase font-black text-slate-500 tracking-widest block mb-2">Gemini API Key <span class="text-[10px] lowercase italic font-normal text-slate-400">(khusus Guru)</span></label>
+                <input type="text" id="user-gemini-api-key" placeholder="AIzaSy..." class="w-full border-2 border-slate-200 px-4 py-3 focus:border-blue-700 outline-none transition-all font-bold text-slate-700">
+            </div>
             
             <button type="submit" class="w-full bg-blue-700 text-white py-4 font-black hover:bg-blue-800 transition-all shadow-lg uppercase tracking-widest text-sm">
                 Simpan User
@@ -109,7 +124,21 @@ async function loadUsers() {
 
 function renderUsers() {
     const tbody = document.getElementById('user-table-body');
-    tbody.innerHTML = allUsers.map(u => `
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const roleFilter = document.getElementById('role-filter').value;
+
+    const filtered = allUsers.filter(u => {
+        const matchesQuery = u.username.toLowerCase().includes(query) || u.namalengkap.toLowerCase().includes(query);
+        const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+        return matchesQuery && matchesRole;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-bold italic uppercase tracking-widest text-xs">Tidak ada user ditemukan</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(u => `
         <tr class="border-b border-slate-200 hover:bg-slate-50 transition-all">
             <td class="px-6 py-4 font-bold text-slate-400 text-sm border-r border-slate-100 w-16">#${u.id}</td>
             <td class="px-6 py-4 font-black text-slate-700">${u.username}</td>
@@ -117,6 +146,11 @@ function renderUsers() {
             <td class="px-6 py-4 text-center border-r border-slate-100">
                 <span class="px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 ${u.role === 'guru' ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-100 border-slate-200 text-slate-600'}">
                     ${u.role}
+                </span>
+            </td>
+            <td class="px-6 py-4 border-r border-slate-100">
+                <span class="text-xs font-mono text-slate-400">
+                    ${u.gemini_api_key ? u.gemini_api_key.substring(0, 8) + '...' : '-'}
                 </span>
             </td>
             <td class="px-6 py-4 text-right">
@@ -149,6 +183,7 @@ function editUser(id) {
     document.getElementById('user-username').value = user.username;
     document.getElementById('user-namalengkap').value = user.namalengkap;
     document.getElementById('user-role').value = user.role;
+    document.getElementById('user-gemini-api-key').value = user.gemini_api_key || '';
     document.getElementById('user-password').value = '';
     document.getElementById('user-password').required = false;
     document.getElementById('pwd-note').classList.remove('hidden');
@@ -162,7 +197,8 @@ async function saveUser(e) {
         username: document.getElementById('user-username').value,
         namalengkap: document.getElementById('user-namalengkap').value,
         password: document.getElementById('user-password').value,
-        role: document.getElementById('user-role').value
+        role: document.getElementById('user-role').value,
+        gemini_api_key: document.getElementById('user-gemini-api-key').value
     };
     
     const res = await fetch('api.php?action=save_user', {

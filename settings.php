@@ -19,8 +19,16 @@ $message = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $userModel = new User($db);
     foreach ($_POST as $key => $value) {
-        $settingModel->set($key, $value);
+        if ($key === 'gemini_api_key') {
+            // Save to current user's profile
+            $currentUser = $userModel->getById($_SESSION['user_id']);
+            $userModel->update($_SESSION['user_id'], $currentUser['username'], $currentUser['namalengkap'], $currentUser['role'], null, $value);
+        } else {
+            // Save to global settings
+            $settingModel->set($key, $value);
+        }
     }
     $message = 'Pengaturan berhasil diperbarui.';
 }
@@ -30,7 +38,9 @@ $navContext = 'settings';
 include 'partials/header.php';
 include 'partials/navbar.php';
 
-$geminiKey = $settingModel->get('gemini_api_key', '');
+$userModel = new User($db);
+$currentUser = $userModel->getById($_SESSION['user_id']);
+$geminiKey = $currentUser['gemini_api_key'] ?? '';
 ?>
 
 <div class="w-fit min-w-full mx-auto p-8 pb-24">
@@ -53,24 +63,18 @@ $geminiKey = $settingModel->get('gemini_api_key', '');
         <?php endif; ?>
 
         <form method="POST" class="bg-white border-2 border-slate-300 shadow-sm">
-            <div class="p-6 border-b-2 border-slate-100">
-                <p class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Fitur Workspace Siswa</p>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="p-5 bg-blue-50 border border-blue-200">
-                    <p class="text-sm font-bold text-blue-800 uppercase tracking-tight mb-2">💡 Info Pengaturan Feedback</p>
-                    <p class="text-xs text-blue-700 leading-relaxed font-medium">Pengaturan "Izinkan Feedback" sekarang dikelola secara individual per modul. Silakan buka <a href="admin.php" class="underline font-black">Studio Map</a> untuk mengaktifkan/menonaktifkan feedback pada masing-masing materi.</p>
-                </div>
-            </div>
 
             <div class="p-6 border-b-2 border-slate-100 bg-slate-50/50">
                 <p class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Integrasi AI (Gemini)</p>
             </div>
             <div class="p-6 space-y-6">
                 <div>
-                    <label class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Google Gemini API Key</label>
-                    <input type="password" name="gemini_api_key" value="<?php echo htmlspecialchars($geminiKey); ?>" class="w-full bg-slate-50 border-2 border-slate-200 p-3 text-sm font-bold focus:border-blue-500 focus:bg-white outline-none transition-all" placeholder="Pate your API Key here...">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2">Dapatkan API Key gratis di <a href="https://aistudio.google.com/" target="_blank" class="text-blue-600 underline">Google AI Studio</a>. Digunakan untuk fitur ekstraksi komponen CER otomatis.</p>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-widest mb-2">Your Gemini API Key</label>
+                    <input type="password" name="gemini_api_key" value="<?php echo htmlspecialchars($geminiKey); ?>" class="w-full bg-slate-50 border-2 border-slate-200 p-3 text-sm font-bold focus:border-blue-500 focus:bg-white outline-none transition-all" placeholder="AIzaSy...">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2">Dapatkan API Key gratis di <a href="https://aistudio.google.com/" target="_blank" class="text-blue-600 underline">Google AI Studio</a>. Pengaturan ini khusus untuk akun Anda (<strong><?php echo $_SESSION['username']; ?></strong>).</p>
+                </div>
+                <div class="p-4 bg-indigo-50 border border-indigo-200">
+                    <p class="text-[11px] text-indigo-700 leading-relaxed font-medium"><strong>Note:</strong> Gemini API Key sekarang dikelola secara individual per akun. Admin juga bisa mengatur key untuk guru lain melalui menu <a href="users.php" class="underline font-black">User Management</a>.</p>
                 </div>
             </div>
 

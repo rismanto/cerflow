@@ -13,6 +13,7 @@ class User {
     public $namalengkap;
     public $password;
     public $role;
+    public $gemini_api_key;
 
     /**
      * Constructor with DB connection
@@ -94,7 +95,7 @@ class User {
      * @return array
      */
     public function getAll() {
-        $query = "SELECT id, username, namalengkap, role FROM " . $this->table_name . " ORDER BY id DESC";
+        $query = "SELECT id, username, namalengkap, role, gemini_api_key FROM " . $this->table_name . " ORDER BY id DESC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -107,7 +108,7 @@ class User {
      * @return array|bool
      */
     public function getById($id) {
-        $query = "SELECT id, username, namalengkap, role FROM " . $this->table_name . " WHERE id = :id";
+        $query = "SELECT id, username, namalengkap, role, gemini_api_key FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -122,19 +123,21 @@ class User {
      * @param string $role
      * @return bool
      */
-    public function create($username, $namalengkap, $password, $role) {
-        $query = "INSERT INTO " . $this->table_name . " (username, namalengkap, password, role) VALUES (:username, :namalengkap, :password, :role)";
+    public function create($username, $namalengkap, $password, $role, $gemini_api_key = null) {
+        $query = "INSERT INTO " . $this->table_name . " (username, namalengkap, password, role, gemini_api_key) VALUES (:username, :namalengkap, :password, :role, :gemini_api_key)";
         $stmt = $this->conn->prepare($query);
-
+        
         $username = htmlspecialchars(strip_tags($username));
         $namalengkap = htmlspecialchars(strip_tags($namalengkap));
         $password = password_hash($password, PASSWORD_DEFAULT);
         $role = htmlspecialchars(strip_tags($role));
+        $gemini_api_key = $gemini_api_key ? htmlspecialchars(strip_tags($gemini_api_key)) : null;
 
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':namalengkap', $namalengkap);
         $stmt->bindParam(':password', $password);
         $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':gemini_api_key', $gemini_api_key);
 
         return $stmt->execute();
     }
@@ -148,11 +151,11 @@ class User {
      * @param string $role
      * @return bool
      */
-    public function update($id, $username, $namalengkap, $role, $password = null) {
+    public function update($id, $username, $namalengkap, $role, $password = null, $gemini_api_key = null) {
         if ($password) {
-            $query = "UPDATE " . $this->table_name . " SET username = :username, namalengkap = :namalengkap, password = :password, role = :role WHERE id = :id";
+            $query = "UPDATE " . $this->table_name . " SET username = :username, namalengkap = :namalengkap, password = :password, role = :role, gemini_api_key = :gemini_api_key WHERE id = :id";
         } else {
-            $query = "UPDATE " . $this->table_name . " SET username = :username, namalengkap = :namalengkap, role = :role WHERE id = :id";
+            $query = "UPDATE " . $this->table_name . " SET username = :username, namalengkap = :namalengkap, role = :role, gemini_api_key = :gemini_api_key WHERE id = :id";
         }
         
         $stmt = $this->conn->prepare($query);
@@ -161,11 +164,13 @@ class User {
         $username = htmlspecialchars(strip_tags($username));
         $namalengkap = htmlspecialchars(strip_tags($namalengkap));
         $role = htmlspecialchars(strip_tags($role));
+        $gemini_api_key = $gemini_api_key ? htmlspecialchars(strip_tags($gemini_api_key)) : null;
 
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':namalengkap', $namalengkap);
         $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':gemini_api_key', $gemini_api_key);
 
         if ($password) {
             $password = password_hash($password, PASSWORD_DEFAULT);
@@ -173,6 +178,21 @@ class User {
         }
 
         return $stmt->execute();
+    }
+
+    /**
+     * Get user's Gemini API key
+     * 
+     * @param int $id
+     * @return string|null
+     */
+    public function getApiKey($id) {
+        $query = "SELECT gemini_api_key FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['gemini_api_key'] : null;
     }
 
     /**

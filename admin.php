@@ -55,53 +55,56 @@ include 'partials/navbar.php';
 
             <div class="bg-white border-2 border-slate-300 shadow-xl flex flex-col overflow-hidden">
                 <!-- Form Header -->
-                <div class="bg-slate-50 border-b-2 border-slate-200 p-8">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 block">Editing Module</label>
-                    <input id="map-title" type="text" placeholder="Masukkan Judul Materi..." class="text-3xl font-black bg-transparent text-slate-800 outline-none border-b-2 border-transparent focus:border-blue-500 transition-all w-full" value="">
+                <div class="bg-slate-50 border-b-2 border-slate-200 p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex-1">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 block">Editing Module</label>
+                        <input id="map-title" type="text" placeholder="Masukkan Judul Materi..." class="text-3xl font-black bg-transparent text-slate-800 outline-none border-b-2 border-transparent focus:border-blue-500 transition-all w-full" value="">
+                    </div>
+                    <div class="flex items-center gap-4 bg-white border border-slate-200 p-3 rounded-lg shadow-sm shrink-0">
+                        <!-- Feedback Toggle -->
+                        <div class="flex items-center gap-2 pr-4 border-r border-slate-100">
+                            <div class="relative inline-block w-8 h-4 shrink-0">
+                                <input type="checkbox" id="allow-feedback" checked class="peer appearance-none w-8 h-4 bg-slate-200 rounded-full checked:bg-emerald-600 cursor-pointer transition-colors duration-200">
+                                <label for="allow-feedback" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
+                            </div>
+                            <label for="allow-feedback" class="text-[9px] font-black text-slate-600 uppercase tracking-widest whitespace-nowrap cursor-pointer">Feedback</label>
+                        </div>
+
+                        <!-- Reading Toggle -->
+                        <div class="flex items-center gap-2">
+                            <div class="relative inline-block w-8 h-4 shrink-0">
+                                <input type="checkbox" id="allow-reading" checked class="peer appearance-none w-8 h-4 bg-slate-200 rounded-full checked:bg-emerald-600 cursor-pointer transition-colors duration-200">
+                                <label for="allow-reading" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
+                            </div>
+                            <label for="allow-reading" class="text-[9px] font-black text-slate-600 uppercase tracking-widest whitespace-nowrap cursor-pointer">Reading</label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-8">
-                    <!-- Toolbar: Settings & Actions -->
-                    <div class="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
-                        <div class="flex items-center gap-6">
-                            <!-- Feedback Toggle -->
-                            <div class="flex items-center gap-2">
-                                <div class="relative inline-block w-8 h-4 shrink-0">
-                                    <input type="checkbox" id="allow-feedback" checked class="peer appearance-none w-8 h-4 bg-slate-200 rounded-full checked:bg-emerald-600 cursor-pointer transition-colors duration-200">
-                                    <label for="allow-feedback" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
-                                </div>
-                                <label for="allow-feedback" class="text-[10px] font-black text-slate-600 uppercase tracking-widest whitespace-nowrap cursor-pointer">Allow Feedback</label>
-                            </div>
-
-                            <!-- Reading Toggle -->
-                            <div class="flex items-center gap-2">
-                                <div class="relative inline-block w-8 h-4 shrink-0">
-                                    <input type="checkbox" id="allow-reading" checked class="peer appearance-none w-8 h-4 bg-slate-200 rounded-full checked:bg-emerald-600 cursor-pointer transition-colors duration-200">
-                                    <label for="allow-reading" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
-                                </div>
-                                <label for="allow-reading" class="text-[10px] font-black text-slate-600 uppercase tracking-widest whitespace-nowrap cursor-pointer">Allow Reading</label>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <button onclick="openAIExtractor()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                                🪄 AI Extract
-                            </button>
-                            <div class="h-4 w-px bg-slate-200 mx-1"></div>
-                            <button onclick="openReadingEditor()" class="bg-white text-slate-700 border border-slate-300 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
-                                📖 Edit Bacaan
-                            </button>
-                            <div class="h-4 w-px bg-slate-200 mx-1"></div>
-                            <a id="btn-preview-map" href="#" target="_blank" class="hidden bg-indigo-600 text-white px-4 py-2 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm">
-                                👁 Preview
-                            </a>
-                            <button id="btn-delete-map" onclick="deleteMap(currentMapId)" class="hidden bg-red-600 text-white px-4 py-2 text-[9px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm">
-                                🗑️ Hapus Map
-                            </button>
-                            <button onclick="saveToDB()" class="bg-emerald-600 text-white px-5 py-2 text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">
-                                💾 Simpan Map
-                            </button>
-                        </div>
+                    <!-- Toolbar: Actions -->
+                    <div class="flex items-center justify-end gap-2 mb-8 pb-6 border-b border-slate-200 overflow-x-auto">
+                        <button onclick="openAIExtractor()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm flex items-center gap-2 shrink-0">
+                            <span>🪄</span> AI Extract
+                        </button>
+                        
+                        <div class="h-4 w-px bg-slate-200 mx-1 shrink-0"></div>
+                        
+                        <button onclick="openReadingEditor()" class="bg-white text-slate-700 border border-slate-300 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm flex items-center gap-2 shrink-0">
+                            <span>📖</span> Edit Bacaan
+                        </button>
+                        
+                        <div class="h-4 w-px bg-slate-200 mx-1 shrink-0"></div>
+                        
+                        <a id="btn-preview-map" href="#" target="_blank" class="hidden bg-slate-100 text-slate-600 border border-slate-200 px-4 py-2 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm shrink-0">
+                            👁 Preview
+                        </a>
+                        <button id="btn-delete-map" onclick="deleteMap(currentMapId)" class="hidden bg-white text-red-600 border border-red-200 px-4 py-2 text-[9px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white hover:border-red-600 transition-all shadow-sm shrink-0">
+                            🗑️ Hapus
+                        </button>
+                        <button onclick="saveToDB()" class="bg-emerald-600 text-white px-5 py-2 text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all shrink-0">
+                            💾 Simpan Map
+                        </button>
                     </div>
 
                     <!-- AI Extraction Dialog -->

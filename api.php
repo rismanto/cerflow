@@ -185,9 +185,10 @@ if ($action == 'save_map') {
     $namalengkap = isset($data['namalengkap']) ? $data['namalengkap'] : '';
     $password = !empty($data['password']) ? $data['password'] : null;
     $role = isset($data['role']) ? $data['role'] : 'siswa';
+    $gemini_api_key = isset($data['gemini_api_key']) ? $data['gemini_api_key'] : null;
 
     if ($id) {
-        if ($userModel->update($id, $username, $namalengkap, $role, $password)) {
+        if ($userModel->update($id, $username, $namalengkap, $role, $password, $gemini_api_key)) {
             echo json_encode(['status' => 'success']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to update user']);
@@ -197,7 +198,7 @@ if ($action == 'save_map') {
             echo json_encode(['status' => 'error', 'message' => 'Password is required for new user']);
             exit;
         }
-        if ($userModel->create($username, $namalengkap, $password, $role)) {
+        if ($userModel->create($username, $namalengkap, $password, $role, $gemini_api_key)) {
             echo json_encode(['status' => 'success']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to create user']);
@@ -205,11 +206,11 @@ if ($action == 'save_map') {
     }
 
 } elseif ($action == 'extract_cer') {
-    $settingModel = new Setting($db);
-    $apiKey = $settingModel->get('gemini_api_key', '');
+    $userModel = new User($db);
+    $apiKey = $userModel->getApiKey($_SESSION['user_id']);
     
     if (empty($apiKey)) {
-        echo json_encode(['status' => 'error', 'message' => 'Gemini API Key belum diatur di menu Pengaturan.']);
+        echo json_encode(['status' => 'error', 'message' => 'Gemini API Key belum diatur untuk akun Anda. Silakan atur API Key di menu User Management.']);
         exit;
     }
 

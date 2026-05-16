@@ -36,7 +36,11 @@ include 'partials/navbar.php';
         <div class="text-center mb-12">
             <span class="text-xs font-black text-blue-700 bg-blue-100 px-4 py-2 uppercase tracking-widest mb-4 inline-block border border-blue-300">Curriculum Discovery</span>
             <h2 class="text-4xl font-black text-slate-800 uppercase italic tracking-tighter mt-4">Select Topic</h2>
-            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest mt-3">Pilih modul pembelajaran untuk memulai sesi Anda</p>
+            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest mt-3 mb-8">Pilih modul pembelajaran untuk memulai sesi Anda</p>
+            
+            <a href="history.php" class="inline-flex items-center gap-2 bg-white border-2 border-slate-300 text-slate-700 px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-slate-50 hover:border-blue-600 hover:text-blue-700 transition-all shadow-sm">
+                📊 Lihat Hasil Sebelumnya
+            </a>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="map-grid">

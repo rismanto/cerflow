@@ -15,7 +15,7 @@ $navContext = isset($navContext) ? $navContext : 'admin'; // 'admin' | 'logs' | 
                 <?php echo isset($activeTitle) ? $activeTitle : ''; ?>
             </div>
             <button onclick="backToSelector()" class="bg-white border border-slate-300 text-slate-600 hover:text-blue-700 hover:border-blue-400 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ml-1">
-                Ganti Materi
+                Pilih materi lain
             </button>
         </div>
         <?php endif; ?>
@@ -56,8 +56,6 @@ $navContext = isset($navContext) ? $navContext : 'admin'; // 'admin' | 'logs' | 
         <?php elseif ($role == 'siswa'): ?>
             <?php if ($navContext === 'history' || $navContext === 'report'): ?>
                 <a href="siswa.php" class="bg-slate-800 text-white px-4 py-1.5 text-[10px] font-black uppercase tracking-widest shadow hover:bg-black transition-all mr-1">← Kembali</a>
-            <?php else: ?>
-                <a href="history.php" class="text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 border border-transparent hover:border-blue-200 transition-all mr-1">Hasil Sebelumnya</a>
             <?php endif; ?>
             <div id="editor-actions" class="hidden flex gap-2">
                 <button id="btn-reading" onclick="toggleReading()" class="hidden bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">📖 Bacaan</button>
