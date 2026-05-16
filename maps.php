@@ -109,9 +109,15 @@ include 'partials/navbar.php';
                 <div class="p-8 flex-1">
                     <div class="flex justify-between items-start mb-6">
                         <span class="text-[10px] font-black text-blue-700 bg-blue-50 px-3 py-1 border border-blue-200 uppercase tracking-widest">Materi #${m.id}</span>
-                        <div class="flex items-center gap-1">
-                            <span title="${m.allow_feedback == 1 ? 'Feedback Aktif' : 'Feedback Nonaktif'}" class="w-3 h-3 rounded-full ${m.allow_feedback == 1 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}"></span>
-                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">${m.allow_feedback == 1 ? 'Feedback ON' : 'OFF'}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1">
+                                <span title="${m.allow_feedback == 1 ? 'Feedback Aktif' : 'Feedback Nonaktif'}" class="${m.allow_feedback == 1 ? '' : 'grayscale opacity-40'}">💡</span>
+                            </div>
+                            ${m.reading_text && m.reading_text.trim() !== '' ? `
+                                <div class="flex items-center gap-1">
+                                    <span title="${m.allow_reading == 1 ? 'Bacaan Aktif' : 'Bacaan Nonaktif'}" class="${m.allow_reading == 1 ? '' : 'grayscale opacity-40'}">📖</span>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                     

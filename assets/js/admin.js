@@ -30,12 +30,17 @@ function applyMapToEditor(selectedMap) {
     window.history.replaceState({}, '', `${window.location.pathname}?edit_id=${id}`);
     document.getElementById('map-title').value = selectedMap.title || '';
     document.getElementById('allow-feedback').checked = (selectedMap.allow_feedback == 1);
+    document.getElementById('allow-reading').checked = (selectedMap.allow_reading == 1);
+    document.getElementById('reading-text-input').value = selectedMap.reading_text || '';
     
     renderMapList(allMapsCache);
     
     const btnPreview = document.getElementById('btn-preview-map');
     btnPreview.href = `preview_map.php?map_id=${id}`;
     btnPreview.classList.remove('hidden');
+
+    const btnDelete = document.getElementById('btn-delete-map');
+    if (btnDelete) btnDelete.classList.remove('hidden');
 
     triplets = (selectedMap.triplets || []).map(t => ({
         id: parseInt(t.id, 10),
@@ -73,12 +78,18 @@ function newMap() {
     
     document.getElementById('map-title').value = '';
     document.getElementById('allow-feedback').checked = true;
+    document.getElementById('allow-reading').checked = true;
+    document.getElementById('reading-text-input').value = '';
     resetTripletForm();
     
     const items = document.querySelectorAll('.sidebar-item');
     items.forEach(item => item.classList.remove('active'));
     
-    document.getElementById('btn-preview-map').classList.add('hidden');
+    const btnPreview = document.getElementById('btn-preview-map');
+    if (btnPreview) btnPreview.classList.add('hidden');
+    
+    const btnDelete = document.getElementById('btn-delete-map');
+    if (btnDelete) btnDelete.classList.add('hidden');
     
     render();
     console.log("Mode: Buat Map Baru");
@@ -200,7 +211,9 @@ function saveToDB() {
                 evidence: t.evidence,
                 reasoning: t.reasoning
             })),
-            allow_feedback: document.getElementById('allow-feedback').checked ? 1 : 0
+            allow_feedback: document.getElementById('allow-feedback').checked ? 1 : 0,
+            allow_reading: document.getElementById('allow-reading').checked ? 1 : 0,
+            reading_text: document.getElementById('reading-text-input').value
         })
     })
     .then(res => res.json())
@@ -266,9 +279,14 @@ function renderMapList(maps) {
             <div>
                 <div class="flex items-center gap-2">
                     <div class="text-[10px] font-bold text-indigo-500 uppercase">Map ID: ${m.id}</div>
-                    <span title="${m.allow_feedback == 1 ? 'Feedback Aktif' : 'Feedback Nonaktif'}" class="${m.allow_feedback == 1 ? 'text-amber-500' : 'text-slate-300'} text-[10px]">
-                        ${m.allow_feedback == 1 ? '💡' : '💤'}
+                    <span title="${m.allow_feedback == 1 ? 'Feedback Aktif' : 'Feedback Nonaktif'}" class="${m.allow_feedback == 1 ? '' : 'grayscale opacity-40'} text-[10px]">
+                        💡
                     </span>
+                    ${m.reading_text && m.reading_text.trim() !== '' ? `
+                        <span title="${m.allow_reading == 1 ? 'Bacaan Aktif' : 'Bacaan Nonaktif'}" class="${m.allow_reading == 1 ? 'text-blue-500' : 'text-slate-300 grayscale opacity-40'} text-[10px]">
+                            📖
+                        </span>
+                    ` : ''}
                 </div>
                 <div class="text-sm font-bold text-slate-700">${m.title}</div>
             </div>
@@ -341,6 +359,21 @@ function editMap(id) {
         console.error("Gagal memuat map:", err);
         alert("Terjadi kesalahan saat memuat isi map.");
     });
+}
+
+function openReadingEditor() {
+    const dialog = document.getElementById('dialog-reading-edit');
+    if (dialog) {
+        dialog.classList.remove('hidden');
+        DialogUtils.init('dialog-reading-edit', 'dialog-reading-edit-header', 'dialog-reading-edit-resize');
+    }
+}
+
+function closeReadingEditor() {
+    const dialog = document.getElementById('dialog-reading-edit');
+    if (dialog) {
+        dialog.classList.add('hidden');
+    }
 }
 
 // Initial load handled by DOMContentLoaded above

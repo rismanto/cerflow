@@ -83,7 +83,9 @@ $data = json_decode(file_get_contents('php://input'), true);
 if ($action == 'save_map') {
     $cerMap = new CERMap($db);
     $allow_feedback = isset($data['allow_feedback']) ? intval($data['allow_feedback']) : 1;
-    $id = $cerMap->save($data['title'], $data['triplets'], isset($data['map_id']) ? $data['map_id'] : null, $allow_feedback);
+    $reading_text = isset($data['reading_text']) ? $data['reading_text'] : null;
+    $allow_reading = isset($data['allow_reading']) ? intval($data['allow_reading']) : 1;
+    $id = $cerMap->save($data['title'], $data['triplets'], isset($data['map_id']) ? $data['map_id'] : null, $allow_feedback, $reading_text, $allow_reading);
     
     if ($id) {
         echo json_encode(['status' => 'ok', 'id' => $id]);

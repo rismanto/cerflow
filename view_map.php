@@ -53,12 +53,12 @@ include 'partials/navbar.php';
         <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">Hasil Map: <span class="text-blue-700"><?php echo htmlspecialchars($score['namalengkap']); ?></span></h2>
         <p class="text-sm text-slate-500 font-bold uppercase tracking-widest mt-1">Materi: <?php echo htmlspecialchars($score['map_title']); ?> | Skor: <?php echo $score['score']; ?>%</p>
     </div>
-    <div class="flex gap-4">
-        <button id="btn-feedback" onclick="toggleFeedback()" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-2 text-sm font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">💡 SHOW FEEDBACK</button>
-        <button onclick="autoArrange()" class="bg-indigo-100 text-indigo-700 border-2 border-indigo-300 px-6 py-2 text-sm font-black uppercase tracking-widest hover:bg-indigo-700 hover:text-white transition-all shadow-sm">
-            ✨ Auto Arrange
+    <div class="flex items-center gap-2">
+        <button id="btn-feedback" onclick="toggleFeedback()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">💡 Feedback</button>
+        <button onclick="autoArrange()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">
+            🪄 Arrange
         </button>
-        <a href="<?php echo $backUrl; ?>" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-2 text-sm font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">
+        <a href="<?php echo $backUrl; ?>" class="bg-slate-800 text-white px-4 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm">
             <?php echo $backText; ?>
         </a>
     </div>
@@ -117,7 +117,7 @@ include 'partials/navbar.php';
         feedbackActive = !feedbackActive;
         const btn = document.getElementById('btn-feedback');
         if (btn) {
-            btn.innerText = feedbackActive ? '💡 HIDE FEEDBACK' : '💡 SHOW FEEDBACK';
+            btn.innerText = feedbackActive ? '💡 Feedback' : '💡 Feedback';
             btn.classList.toggle('bg-blue-50', feedbackActive);
             btn.classList.toggle('border-blue-400', feedbackActive);
             btn.classList.toggle('text-blue-700', feedbackActive);
@@ -165,7 +165,7 @@ include 'partials/navbar.php';
         // Initial UI update for feedback button
         const btn = document.getElementById('btn-feedback');
         if (btn && feedbackActive) {
-            btn.innerText = '💡 HIDE FEEDBACK';
+            btn.innerText = '💡 Feedback';
             btn.classList.add('bg-blue-50', 'border-blue-400', 'text-blue-700');
         }
 

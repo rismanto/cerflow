@@ -108,6 +108,10 @@ function startLearning(i) {
     document.getElementById('active-title').innerText = currentMap.title;
     document.getElementById('active-title-container').classList.remove('hidden');
     document.getElementById('editor-actions').classList.remove('hidden');
+    
+    // Reset reading dialog
+    document.getElementById('dialog-reading').classList.add('hidden');
+    
     restoreEditorActions();
     
     document.getElementById('view-selector').classList.add('hidden');
@@ -309,14 +313,45 @@ function restoreEditorActions() {
     if (actionsEl) {
         const feedbackBtn = (currentMap && currentMap.allow_feedback == 0) 
             ? '' 
-            : `<button id="btn-feedback" onclick="toggleFeedback()" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-2 text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition-all">💡 SHOW FEEDBACK</button>`;
+            : `<button id="btn-feedback" onclick="toggleFeedback()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">💡 Feedback</button>`;
+
+        const readingBtn = (currentMap && currentMap.allow_reading == 1 && currentMap.reading_text) 
+            ? `<button id="btn-reading" onclick="toggleReading()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">📖 Bacaan</button>` 
+            : '';
 
         actionsEl.innerHTML = `
+            ${readingBtn}
             ${feedbackBtn}
-            <button onclick="autoArrange()" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-2 text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition-all">🪄 AUTO ARRANGE</button>
-            <button onclick="submitScore()" class="bg-blue-700 text-white px-6 py-2 text-sm font-bold hover:bg-blue-800 shadow transition-all">SUBMIT JAWABAN</button>
+            <button onclick="autoArrange()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">🪄 Arrange</button>
+            <button onclick="submitScore()" class="bg-blue-700 text-white px-4 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-blue-800 shadow transition-all">Submit</button>
         `;
         updateFeedbackUI();
+    }
+}
+
+/**
+ * Toggle reading dialog
+ */
+function toggleReading() {
+    const dialog = document.getElementById('dialog-reading');
+    const content = document.getElementById('dialog-reading-content');
+    const btn = document.getElementById('btn-reading');
+    
+    if (!dialog || !currentMap) return;
+
+    if (dialog.classList.contains('hidden')) {
+        // Opening
+        content.innerText = currentMap.reading_text || 'Tidak ada teks bacaan untuk materi ini.';
+        dialog.classList.remove('hidden');
+        if (btn) btn.classList.add('bg-blue-50', 'border-blue-400', 'text-blue-700');
+        logAction('view_reading');
+        
+        // Initialize draggable/resizable
+        DialogUtils.init('dialog-reading', 'dialog-reading-header', 'dialog-reading-resize');
+    } else {
+        // Closing
+        dialog.classList.add('hidden');
+        if (btn) btn.classList.remove('bg-blue-50', 'border-blue-400', 'text-blue-700');
     }
 }
 
@@ -326,7 +361,7 @@ function restoreEditorActions() {
 function updateFeedbackUI() {
     const btn = document.getElementById('btn-feedback');
     if (btn) {
-        btn.innerText = feedbackActive ? '💡 HIDE FEEDBACK' : '💡 SHOW FEEDBACK';
+        btn.innerText = feedbackActive ? '💡 Feedback' : '💡 Feedback';
         btn.classList.toggle('bg-blue-50', feedbackActive);
         btn.classList.toggle('border-blue-400', feedbackActive);
         btn.classList.toggle('text-blue-700', feedbackActive);
@@ -347,10 +382,6 @@ function toggleFeedback() {
     redrawLines();
 }
 
-/**
- * Lock the editor into read-only (view-only) mode.
- * Disables node dragging, card sorting, and action buttons.
- */
 function lockEditor() {
     isLocked = true;
     feedbackActive = true; // Auto-enable feedback after submission
@@ -362,14 +393,18 @@ function lockEditor() {
         n.style.pointerEvents = 'none';
     });
 
-    // Replace action buttons with read-only badge, feedback button, and auto-arrange
     const actionsEl = document.getElementById('editor-actions');
     if (actionsEl) {
+        const readingBtn = (currentMap && currentMap.allow_reading == 1 && currentMap.reading_text) 
+            ? `<button id="btn-reading" onclick="toggleReading()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">📖 Bacaan</button>` 
+            : '';
+
         actionsEl.innerHTML = `
-            <button id="btn-feedback" onclick="toggleFeedback()" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-2 text-sm font-bold hover:bg-slate-50 hover:border-slate-400 transition-all">💡 SHOW FEEDBACK</button>
-            <button onclick="autoArrange()" class="bg-indigo-100 text-indigo-700 border-2 border-indigo-300 px-6 py-2 text-sm font-black uppercase tracking-widest hover:bg-indigo-700 hover:text-white transition-all shadow-sm">✨ AUTO ARRANGE</button>
-            <span class="bg-amber-100 border border-amber-300 text-amber-700 px-5 py-2 text-xs font-black uppercase tracking-widest">
-                🔒 Mode Lihat — Sudah Disubmit
+            ${readingBtn}
+            <button id="btn-feedback" onclick="toggleFeedback()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">💡 Feedback</button>
+            <button onclick="autoArrange()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all">🪄 Arrange</button>
+            <span class="bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                🔒 Mode Lihat — Terkirim
             </span>
         `;
         updateFeedbackUI();

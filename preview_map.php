@@ -63,11 +63,11 @@ include 'partials/navbar.php';
         <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">Preview Map: <span class="text-blue-700"><?php echo htmlspecialchars($currentMap['title']); ?></span></h2>
         <p class="text-sm text-emerald-600 font-bold uppercase tracking-widest mt-1">✓ Menampilkan Koneksi Triplet yang Benar</p>
     </div>
-    <div class="flex gap-4">
-        <button onclick="autoArrange()" class="bg-indigo-100 text-indigo-700 border-2 border-indigo-300 px-6 py-2 text-sm font-black uppercase tracking-widest hover:bg-indigo-700 hover:text-white transition-all shadow-sm">
-            ✨ Auto Arrange
+    <div class="flex items-center gap-2">
+        <button onclick="autoArrange()" class="bg-white border border-slate-300 text-slate-700 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">
+            🪄 Arrange
         </button>
-        <a href="admin.php" class="bg-white border-2 border-slate-300 text-slate-700 px-6 py-2 text-sm font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-400 transition-all shadow-sm">
+        <a href="admin.php" class="bg-slate-800 text-white px-4 py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-sm">
             ← Kembali ke Studio
         </a>
     </div>

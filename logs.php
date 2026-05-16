@@ -83,12 +83,13 @@ include 'partials/navbar.php';
                     <th class="px-2 py-3 text-center">Move</th>
                     <th class="px-2 py-3 text-center">Arrange</th>
                     <th class="px-2 py-3 text-center">Feedback</th>
+                    <th class="px-2 py-3 text-center">Reading</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
                 <?php if(empty($sessions)): ?>
                     <tr>
-                        <td colspan="13" class="p-20 text-center">
+                        <td colspan="14" class="p-20 text-center">
                             <div class="flex flex-col items-center">
                                 <span class="text-4xl mb-4">📝</span>
                                 <p class="text-slate-400 font-bold italic text-sm uppercase tracking-widest">Belum ada log aktivitas yang tersimpan.</p>
@@ -144,6 +145,9 @@ include 'partials/navbar.php';
                     <td class="px-2 py-3 text-center text-indigo-600 font-bold">
                         <?php echo $s['count_feedback']; ?>
                     </td>
+                    <td class="px-2 py-3 text-center text-teal-600 font-bold">
+                        <?php echo $s['count_view_reading']; ?>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -177,7 +181,7 @@ include 'partials/navbar.php';
             'Sesi ID', 'Materi', 'Nama (Username)', 'Nama Lengkap', 
             'Time Start', 'Time End', 'Durasi', 'Score (%)', 
             'Total Aksi', 'Aksi Connect', 'Aksi Disconnect', 
-            'Aksi Move', 'Aksi Auto Arrange', 'Aksi Feedback'
+            'Aksi Move', 'Aksi Auto Arrange', 'Aksi Feedback', 'Aksi Reading'
         ]);
 
         rows.forEach(row => {
@@ -200,12 +204,13 @@ include 'partials/navbar.php';
             const countMove = row.children[10].innerText.trim();
             const countAutoArrange = row.children[11].innerText.trim();
             const countFeedback = row.children[12].innerText.trim();
+            const countReading = row.children[13].innerText.trim();
 
             data.push([
                 sesiId, materi, username, namaLengkap, 
                 timeStart, timeEnd, durasi, score, 
                 totalAksi, countConnect, countDisconnect, 
-                countMove, countAutoArrange, countFeedback
+                countMove, countAutoArrange, countFeedback, countReading
             ]);
         });
 

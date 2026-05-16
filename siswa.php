@@ -124,10 +124,25 @@ include 'partials/navbar.php';
     </div>
 </div>
 
+<!-- Reading Dialog -->
+<div id="dialog-reading" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-white border-2 border-slate-300 shadow-2xl hidden flex flex-col min-w-[200px] min-h-[150px] rounded-xl overflow-hidden" style="width: 500px; height: 400px;">
+    <div id="dialog-reading-header" class="bg-slate-50 border-b-2 border-slate-200 text-slate-800 px-6 py-4 flex justify-between items-center cursor-grab active:cursor-grabbing">
+        <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+            <span class="text-lg">📖</span> Materi Bacaan
+        </span>
+        <button onclick="toggleReading()" class="text-slate-400 hover:text-red-500 font-black transition-colors">✕</button>
+    </div>
+    <div id="dialog-reading-content" class="flex-1 p-6 overflow-y-auto text-sm leading-relaxed text-slate-700 font-medium whitespace-pre-wrap">
+        <!-- Text goes here -->
+    </div>
+    <div id="dialog-reading-resize" class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize bg-slate-200 hover:bg-slate-300"></div>
+</div>
+
 <script>
     const cerMaps = <?= json_encode($maps, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="assets/js/dialog-utils.js"></script>
 <?php $siswaJsVersion = file_exists('assets/js/siswa.js') ? filemtime('assets/js/siswa.js') : time(); ?>
 <script src="assets/js/siswa.js?v=<?php echo $siswaJsVersion; ?>"></script>
 

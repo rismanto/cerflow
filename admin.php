@@ -53,37 +53,70 @@ include 'partials/navbar.php';
                 <p class="text-sm text-slate-500 font-bold uppercase tracking-widest mt-2">Create and publish learning modules</p>
             </div>
 
-            <div class="bg-white p-10 border-2 border-slate-300 shadow-lg">
-                <!-- Top Action Bar -->
-                <div class="mb-6 flex justify-between items-center bg-slate-50 border border-slate-200 px-6 py-3 -mx-10 -mt-10 mb-10 border-x-0 border-t-0">
-                    <div class="flex items-center gap-6">
-                        <!-- Feedback Toggle -->
-                        <div class="flex items-center gap-3 shrink-0">
-                            <div>
-                                <label for="allow-feedback" class="text-[9px] font-black text-slate-500 uppercase tracking-widest block cursor-pointer leading-none">Allow Feedback</label>
-                                <p class="text-[8px] text-slate-400 font-bold uppercase leading-none mt-1">During work</p>
+            <div class="bg-white border-2 border-slate-300 shadow-xl flex flex-col overflow-hidden">
+                <!-- Form Header -->
+                <div class="bg-slate-50 border-b-2 border-slate-200 p-8">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1 block">Editing Module</label>
+                    <input id="map-title" type="text" placeholder="Masukkan Judul Materi..." class="text-3xl font-black bg-transparent text-slate-800 outline-none border-b-2 border-transparent focus:border-blue-500 transition-all w-full" value="">
+                </div>
+
+                <div class="p-8">
+                    <!-- Toolbar: Settings & Actions -->
+                    <div class="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
+                        <div class="flex items-center gap-6">
+                            <!-- Feedback Toggle -->
+                            <div class="flex items-center gap-2">
+                                <div class="relative inline-block w-8 h-4 shrink-0">
+                                    <input type="checkbox" id="allow-feedback" checked class="peer appearance-none w-8 h-4 bg-slate-200 rounded-full checked:bg-emerald-600 cursor-pointer transition-colors duration-200">
+                                    <label for="allow-feedback" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
+                                </div>
+                                <label for="allow-feedback" class="text-[10px] font-black text-slate-600 uppercase tracking-widest whitespace-nowrap cursor-pointer">Allow Feedback</label>
                             </div>
-                            <div class="relative inline-block w-8 h-4">
-                                <input type="checkbox" id="allow-feedback" checked class="peer appearance-none w-8 h-4 bg-slate-300 rounded-full checked:bg-blue-600 cursor-pointer transition-colors duration-200">
-                                <label for="allow-feedback" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
+
+                            <!-- Reading Toggle -->
+                            <div class="flex items-center gap-2">
+                                <div class="relative inline-block w-8 h-4 shrink-0">
+                                    <input type="checkbox" id="allow-reading" checked class="peer appearance-none w-8 h-4 bg-slate-200 rounded-full checked:bg-emerald-600 cursor-pointer transition-colors duration-200">
+                                    <label for="allow-reading" class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-transform duration-200 cursor-pointer shadow peer-checked:translate-x-4"></label>
+                                </div>
+                                <label for="allow-reading" class="text-[10px] font-black text-slate-600 uppercase tracking-widest whitespace-nowrap cursor-pointer">Allow Reading</label>
                             </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="openReadingEditor()" class="bg-white text-slate-700 border border-slate-300 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                                📖 Edit Bacaan
+                            </button>
+                            <div class="h-4 w-px bg-slate-200 mx-1"></div>
+                            <a id="btn-preview-map" href="#" target="_blank" class="hidden bg-indigo-600 text-white px-4 py-2 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm">
+                                👁 Preview
+                            </a>
+                            <button id="btn-delete-map" onclick="deleteMap(currentMapId)" class="hidden bg-red-600 text-white px-4 py-2 text-[9px] font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm">
+                                🗑️ Hapus Map
+                            </button>
+                            <button onclick="saveToDB()" class="bg-emerald-600 text-white px-5 py-2 text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">
+                                💾 Simpan Map
+                            </button>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <a id="btn-preview-map" href="#" target="_blank" class="hidden bg-white text-indigo-700 border border-indigo-200 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 hover:text-white transition-all shadow-sm">
-                            👁 Preview Map
-                        </a>
-                        <button onclick="saveToDB()" class="bg-blue-700 text-white px-5 py-2 text-[10px] font-black uppercase tracking-widest shadow hover:bg-blue-800 transition-all">
-                            💾 Simpan Map
-                        </button>
+                    <!-- Reading Edit Dialog -->
+                    <div id="dialog-reading-edit" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-white border-2 border-slate-300 shadow-2xl hidden flex flex-col min-w-[200px] min-h-[150px] rounded-xl overflow-hidden" style="width: 600px; height: 500px;">
+                        <div id="dialog-reading-edit-header" class="bg-slate-50 border-b-2 border-slate-200 text-slate-800 px-6 py-4 flex justify-between items-center cursor-grab active:cursor-grabbing">
+                            <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <span class="text-lg">📝</span> Edit Materi Bacaan
+                            </span>
+                            <button onclick="closeReadingEditor()" class="text-slate-400 hover:text-red-500 font-black transition-colors">✕</button>
+                        </div>
+                        <div class="flex-1 p-8 flex flex-col">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Tuliskan teks lengkap yang dapat dibaca siswa saat mengerjakan map ini.</p>
+                            <textarea id="reading-text-input" class="flex-1 w-full p-6 border border-slate-200 rounded outline-none focus:border-blue-400 transition-all text-sm leading-relaxed text-slate-700 font-medium resize-none" placeholder="Ketik atau tempel teks bacaan di sini..."></textarea>
+                            <div class="mt-6 flex justify-end">
+                                <button onclick="closeReadingEditor()" class="bg-slate-800 text-white px-8 py-3 text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow">Selesai</button>
+                            </div>
+                        </div>
+                        <div id="dialog-reading-edit-resize" class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize bg-slate-200 hover:bg-slate-300"></div>
                     </div>
-                </div>
-
-                <div class="mb-10">
-                    <label class="text-xs uppercase font-black text-slate-500 tracking-widest block mb-2">Judul Materi / Map</label>
-                    <input id="map-title" type="text" placeholder="Masukkan Judul Materi..." class="text-2xl font-black w-full mt-1 border-b-2 border-slate-200 pb-3 outline-none focus:border-blue-600 transition-all text-slate-800">
-                </div>
 
                 <!-- Input Triplet Form -->
                 <div class="bg-blue-50 p-8 border-2 border-blue-200 mb-8">
@@ -140,6 +173,7 @@ $adminJsVersion = file_exists('assets/js/admin.js') ? filemtime('assets/js/admin
 $initialEditMapJson = json_encode($initialEditMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
 $extraFooter = '<script>window.INITIAL_EDIT_MAP_ID = ' . $initialEditMapId . ';</script>' .
     '<script>window.INITIAL_EDIT_MAP_DATA = ' . $initialEditMapJson . ';</script>' .
+    '<script src="assets/js/dialog-utils.js"></script>' .
     '<script src="assets/js/admin.js?v=' . $adminJsVersion . '"></script>';
 include 'partials/footer.php'; 
 ?>

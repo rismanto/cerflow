@@ -550,4 +550,24 @@ private $password = "";
 
 ---
 
+## 15. Advanced Analytics (Future Implementation Plan)
+
+This section outlines the planned transition from raw logging to visual Learning Process Analytics (LPA).
+
+### Proposed Visualizations (via Chart.js)
+
+| Visualization | Metrics | Learning Insight |
+|---|---|---|
+| **Guessing vs. Reasoning Ratio** | `Disconnect` count vs. `Connect` count | Identifies "quality of thinking." High disconnect counts relative to connects signal trial-and-error/guessing behavior. |
+| **Efficiency Scatter Plot** | Total Actions (X) vs. Final Score (Y) | Segments students into: Masters (low effort, high score), Grinders (high effort, high score), and Strugglers (high effort, low score). |
+| **Module Difficulty Profile** | Avg. Score per CER Map | Class-wide diagnostic tool to identify modules where the content or triplets might be too difficult or ambiguous. |
+| **Score Distribution (Bell Curve)** | Frequency of score ranges | Shows whether learning is uniform across the class or if there's a significant split in comprehension. |
+
+### Technical Strategy
+- **Library Selection**: **Chart.js** (CDN). Chosen for its lightweight footprint and premium, interactive aesthetics.
+- **Data Metric Policy**: **Exclude `view_reading`**. This metric was deemed unreliable because students may read from physical sources or leave the dialog open throughout the session, creating "noisy" data.
+- **Implementation Layout**: Add a "Summary Dashboard" header to `logs.php` with 3-4 key stat cards and 2 interactive charts, keeping the raw log table below for detailed evidence.
+
+---
+
 *Documentation generated: May 2026*

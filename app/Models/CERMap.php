@@ -74,28 +74,34 @@ class CERMap {
      * @param array $triplets
      * @param int|null $map_id
      * @param int $allow_feedback
+     * @param string|null $reading_text
+     * @param int $allow_reading
      * @return int|bool
      */
-    public function save($title, $triplets, $map_id = null, $allow_feedback = 1) {
+    public function save($title, $triplets, $map_id = null, $allow_feedback = 1, $reading_text = null, $allow_reading = 1) {
         try {
             $this->conn->beginTransaction();
 
             if ($map_id) {
                 // Update existing map
-                $query = "UPDATE " . $this->table_maps . " SET title = :title, allow_feedback = :allow_feedback WHERE id = :id";
+                $query = "UPDATE " . $this->table_maps . " SET title = :title, allow_feedback = :allow_feedback, reading_text = :reading_text, allow_reading = :allow_reading WHERE id = :id";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':title', $title);
                 $stmt->bindParam(':allow_feedback', $allow_feedback);
+                $stmt->bindParam(':reading_text', $reading_text);
+                $stmt->bindParam(':allow_reading', $allow_reading);
                 $stmt->bindParam(':id', $map_id);
                 $stmt->execute();
 
                 $id = $map_id;
             } else {
                 // Insert new map
-                $query = "INSERT INTO " . $this->table_maps . " (title, allow_feedback) VALUES (:title, :allow_feedback)";
+                $query = "INSERT INTO " . $this->table_maps . " (title, allow_feedback, reading_text, allow_reading) VALUES (:title, :allow_feedback, :reading_text, :allow_reading)";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':title', $title);
                 $stmt->bindParam(':allow_feedback', $allow_feedback);
+                $stmt->bindParam(':reading_text', $reading_text);
+                $stmt->bindParam(':allow_reading', $allow_reading);
                 $stmt->execute();
                 $id = $this->conn->lastInsertId();
             }

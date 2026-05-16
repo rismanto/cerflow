@@ -59,6 +59,7 @@ class UserLog {
                          (SELECT COUNT(*) FROM user_logs WHERE session_id = s.id AND action_type = 'move') as count_move,
                          (SELECT COUNT(*) FROM user_logs WHERE session_id = s.id AND action_type = 'auto_arrange') as count_auto_arrange,
                          (SELECT COUNT(*) FROM user_logs WHERE session_id = s.id AND action_type = 'feedback') as count_feedback,
+                         (SELECT COUNT(*) FROM user_logs WHERE session_id = s.id AND action_type = 'view_reading') as count_view_reading,
                          (SELECT MIN(created_at) FROM user_logs WHERE session_id = s.id) as first_action,
                          (SELECT MAX(created_at) FROM user_logs WHERE session_id = s.id) as last_action,
                          (SELECT score FROM scores WHERE session_id = s.id LIMIT 1) as final_score
