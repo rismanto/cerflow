@@ -9,6 +9,8 @@ require_once 'app/Models/User.php';
 require_once 'app/Models/CERMap.php';
 require_once 'app/Models/Score.php';
 require_once 'app/Models/UserLog.php';
+require_once 'app/Models/Setting.php';
+require_once 'app/Services/AIService.php';
 
 // Prevent errors from breaking JSON output
 error_reporting(0);
@@ -20,7 +22,7 @@ $db = $database->getConnection();
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 // Auth check for certain actions
-if (in_array($action, ['save_map', 'delete_map', 'get_map', 'get_users', 'save_user', 'delete_user', 'import_users', 'download_template'])) {
+if (in_array($action, ['save_map', 'delete_map', 'get_map', 'get_users', 'save_user', 'delete_user', 'import_users', 'download_template', 'extract_cer'])) {
     if (!User::checkAuth('guru')) {
         echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
         exit;
@@ -200,6 +202,29 @@ if ($action == 'save_map') {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Failed to create user']);
         }
+    }
+
+} elseif ($action == 'extract_cer') {
+    $settingModel = new Setting($db);
+    $apiKey = $settingModel->get('gemini_api_key', '');
+    
+    if (empty($apiKey)) {
+        echo json_encode(['status' => 'error', 'message' => 'Gemini API Key belum diatur di menu Pengaturan.']);
+        exit;
+    }
+
+    if (empty($data['text'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Teks bacaan tidak boleh kosong.']);
+        exit;
+    }
+
+    $aiService = new AIService($apiKey);
+    $triplets = $aiService->extractCER($data['text']);
+
+    if ($triplets) {
+        echo json_encode(['status' => 'success', 'data' => $triplets]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Gagal mengekstraksi komponen CER. Pastikan teks berisi informasi ilmiah yang cukup dan API Key valid.']);
     }
 
 } elseif ($action == 'delete_user') {

@@ -84,6 +84,10 @@ include 'partials/navbar.php';
                         </div>
 
                         <div class="flex items-center gap-2">
+                            <button onclick="openAIExtractor()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                                🪄 AI Extract
+                            </button>
+                            <div class="h-4 w-px bg-slate-200 mx-1"></div>
                             <button onclick="openReadingEditor()" class="bg-white text-slate-700 border border-slate-300 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
                                 📖 Edit Bacaan
                             </button>
@@ -98,6 +102,33 @@ include 'partials/navbar.php';
                                 💾 Simpan Map
                             </button>
                         </div>
+                    </div>
+
+                    <!-- AI Extraction Dialog -->
+                    <div id="dialog-ai-extract" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] bg-white border-2 border-slate-300 shadow-2xl hidden flex flex-col min-w-[200px] min-h-[150px] rounded-xl overflow-hidden" style="width: 600px; height: 500px;">
+                        <div id="dialog-ai-extract-header" class="bg-slate-50 border-b-2 border-slate-200 text-slate-800 px-6 py-4 flex justify-between items-center cursor-grab active:cursor-grabbing">
+                            <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <span class="text-lg">🪄</span> AI CER Extractor
+                            </span>
+                            <button onclick="closeAIExtractor()" class="text-slate-400 hover:text-red-500 font-black transition-colors">✕</button>
+                        </div>
+                        <div class="flex-1 p-8 flex flex-col">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 leading-relaxed">Tempelkan teks bacaan di bawah ini. AI akan secara otomatis mengekstraksi komponen Claim, Evidence, dan Reasoning ke dalam Studio.</p>
+                            
+                            <textarea id="ai-extract-input" class="flex-1 w-full p-6 border border-slate-200 rounded outline-none focus:border-indigo-400 transition-all text-sm leading-relaxed text-slate-700 font-medium resize-none mb-6" placeholder="Paste your reading material here..."></textarea>
+                            
+                            <div class="flex justify-between items-center">
+                                <div id="ai-loading" class="hidden flex items-center gap-3 text-indigo-600 font-black uppercase text-[10px] tracking-widest">
+                                    <div class="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                    AI sedang bekerja...
+                                </div>
+                                <div class="flex-1"></div>
+                                <button id="btn-run-ai" onclick="runAIExtraction()" class="bg-indigo-600 text-white px-10 py-3 text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow">
+                                    Ekstrak Sekarang
+                                </button>
+                            </div>
+                        </div>
+                        <div id="dialog-ai-extract-resize" class="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize bg-slate-200 hover:bg-slate-300"></div>
                     </div>
 
                     <!-- Reading Edit Dialog -->

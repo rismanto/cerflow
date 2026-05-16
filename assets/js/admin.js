@@ -376,4 +376,74 @@ function closeReadingEditor() {
     }
 }
 
+/**
+ * AI Extractor Logic
+ */
+function openAIExtractor() {
+    const dialog = document.getElementById('dialog-ai-extract');
+    if (dialog) {
+        dialog.classList.remove('hidden');
+        document.getElementById('ai-extract-input').value = '';
+        DialogUtils.init('dialog-ai-extract', 'dialog-ai-extract-header', 'dialog-ai-extract-resize');
+    }
+}
+
+function closeAIExtractor() {
+    const dialog = document.getElementById('dialog-ai-extract');
+    if (dialog) {
+        dialog.classList.add('hidden');
+    }
+}
+
+function runAIExtraction() {
+    const text = document.getElementById('ai-extract-input').value.trim();
+    if (!text) return alert("Tempelkan teks bacaan terlebih dahulu!");
+
+    const loading = document.getElementById('ai-loading');
+    const btn = document.getElementById('btn-run-ai');
+
+    loading.classList.remove('hidden');
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+    fetch('api.php?action=extract_cer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // 1. Update the Reading Text field
+            document.getElementById('reading-text-input').value = text;
+            
+            // 2. Append new triplets to the local list
+            const extractedTriplets = data.data.map(t => ({
+                id: null,
+                claim: t.claim,
+                evidence: t.evidence,
+                reasoning: t.reasoning
+            }));
+
+            triplets = [...triplets, ...extractedTriplets];
+            
+            // 3. UI Updates
+            render();
+            closeAIExtractor();
+            alert(`Berhasil mengekstraksi ${extractedTriplets.length} komponen CER! Silakan cek daftar di bawah untuk menyesuaikannya.`);
+        } else {
+            alert("AI Error: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error("AI Fetch Error:", err);
+        alert("Gagal menghubungi server AI.");
+    })
+    .finally(() => {
+        loading.classList.add('hidden');
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    });
+}
+
 // Initial load handled by DOMContentLoaded above
