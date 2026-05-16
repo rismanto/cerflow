@@ -1,6 +1,6 @@
 # CER Flow AI Handoff
 
-Last updated: 2026-05-13
+Last updated: 2026-05-16
 
 This document is for the next AI agent or developer who needs to work quickly in this codebase. It focuses on the actual moving parts, current architecture, data flow, and known traps.
 
@@ -14,8 +14,9 @@ CER Flow is a PHP/MySQL web app for Claim-Evidence-Reasoning learning activities
 - Database: MySQL/MariaDB through PDO.
 - Frontend: vanilla JavaScript, Tailwind CDN, SortableJS CDN.
 - Server target: XAMPP/Apache, project located at `D:\xampp\htdocs\cerflow`.
+- Containerization: `docker-compose.yml` provided for MySQL 8.0 environment.
 - No Composer, npm build step, router, framework, or bundler.
-- DB credentials are hardcoded in `app/Config/Database.php`.
+- DB credentials are hardcoded in `app/Config/Database.php` (uses getenv fallback).
 
 Common local URL is likely:
 
@@ -35,8 +36,9 @@ view_map.php              Read-only view of submitted student map snapshot.
 report.php                Teacher score analytics.
 logs.php                  Teacher interaction-log analytics.
 history.php               Student submission history.
-users.php                 Teacher user CRUD and CSV import.
-settings.php              Teacher settings page.
+users.php                 Teacher user CRUD, CSV import, and per-user Gemini API keys.
+settings.php              Teacher settings: managed personal Gemini key and system name.
+docker-compose.yml        Docker setup for MySQL 8.0 environment.
 
 assets/js/admin.js        Map Studio frontend logic.
 assets/js/siswa.js        Student reconstruction frontend logic.
@@ -47,9 +49,10 @@ app/Models/CERMap.php     Maps and triplets.
 app/Models/User.php       Auth and user CRUD.
 app/Models/Score.php      Score persistence and reports.
 app/Models/UserLog.php    Student sessions and action logs.
-app/Models/Setting.php    Key-value settings.
+app/Models/Setting.php    Key-value settings (global).
+app/Services/AIService.php Gemini API integration (Flash 1.5).
 
-database.sql              Schema plus seed data dump.
+database.sql              Schema plus seed data dump (includes gemini_api_key column).
 seed_maps.sql             Sample map/triplet inserts.
 cerflow_developer_docs.md Older broader documentation; useful, but may be stale.
 ```
@@ -85,15 +88,17 @@ if (!User::checkAuth('guru')) {
 
 Important tables:
 
-- `users`: login accounts.
+- `users`: login accounts. Contains `gemini_api_key` for per-teacher AI features.
 - `cer_maps`: teacher-created map metadata.
 - `triplets`: claim/evidence/reasoning rows linked by `map_id`.
 - `scores`: submitted student score, session id, and `map_data` JSON snapshot.
 - `user_sessions`: one student working session per map start.
 - `user_logs`: interaction events such as connect, disconnect, move, feedback.
-- `settings`: key-value settings.
+- `settings`: global key-value settings (system name, etc).
 
-Current schema includes `cer_maps.allow_feedback`, used per map. Be careful: some older docs/schema examples may not include or seed it correctly.
+Current schema includes:
+- `cer_maps.allow_feedback`: used per map.
+- `users.gemini_api_key`: per-user teacher credentials for AI features.
 
 ## 6. Main Teacher Flow
 
@@ -265,6 +270,7 @@ Teacher-protected actions:
 - `delete_user` POST JSON
 - `import_users` POST multipart CSV
 - `download_template` GET CSV
+- `extract_cer` POST JSON (AI logic)
 
 General/student actions:
 
@@ -344,7 +350,7 @@ Current `save_map` request:
 ### `User.php`
 
 - `login()`, `checkAuth()`, `logout()`.
-- User CRUD.
+- User CRUD (includes `gemini_api_key`).
 
 ### `Setting.php`
 
@@ -461,11 +467,20 @@ echo json_encode(['status' => 'success', 'data' => $data]);
 3. Add a column in `logs.php`.
 4. Update Excel export if it assumes fixed columns.
 
-## 15. Suggested Next Cleanup
+## 15. AI Extraction (Gemini)
+- Model: `gemini-flash-latest`.
+- Auth: Header-based `x-goog-api-key`.
+- Logic: `AIService::extractCER($text)` returns triplets.
+- Key Storage: Fetched from the session user's ID using `User::getApiKey()`.
 
-- Finish replacing inline JS handlers in `admin.js`, `maps.php`, and other pages with event listeners.
-- Add a small `escapeHtml()` helper for frontend rendering of teacher/student content.
-- Remove `error_reporting(0)` during development or log errors to a file.
-- Add a minimal `migrations/` folder for schema changes such as `allow_feedback`.
-- Add smoke-test docs with exact login credentials and happy-path clicks.
-- Split `api.php` by domain once it grows further.
+## 16. Docker Setup
+- Database: MySQL 8.0 image.
+- Port: `3306`.
+- Root PW: `root`.
+- Auto-Init: Loads `database.sql` on first start.
+- Commands: `docker-compose up -d`.
+
+## 17. Suggested Next Cleanup
+- Move remaining inline JS handlers to event listeners.
+- Implement more robust error handling for AI responses.
+- Add "Test Connection" button in Settings for Gemini API keys.
