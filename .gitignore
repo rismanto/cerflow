@@ -1,0 +1,20 @@
+# === Logs & Debugging ===
+*.log
+scratch/
+
+# === Sensitive / Environment ===
+.env
+.env.*
+
+# === Storage (user data, never commit) ===
+storage/database.json
+storage/logs.ndjson
+
+# === OS & Editor ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# === PHP ===
+vendor/
