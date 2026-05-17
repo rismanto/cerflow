@@ -1,6 +1,20 @@
-version: '3.8'
-
 services:
+  app:
+    build: .
+    container_name: cerflow-app
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: cer_flow_db
+      DB_USER: root
+      DB_PASS: root
+
   db:
     image: mysql:8.0
     container_name: cerflow-db
@@ -8,13 +22,24 @@ services:
     environment:
       MYSQL_DATABASE: cer_flow_db
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: cerflow_user
-      MYSQL_PASSWORD: cerflow_password
     ports:
       - "3306:3306"
     volumes:
       - ./database.sql:/docker-entrypoint-initdb.d/init.sql
       - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: cerflow-phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - db
 
 volumes:
   mysql_data:
