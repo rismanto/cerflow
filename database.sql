@@ -217,7 +217,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','Administrator','$2y$10$2p7GZJpvIqCGg/feguG6/OkdDZReaUTeY1cRTUoKnRzSC2R65DjJe','guru'),(2,'siswa','Siswa Percobaan','$2y$10$8J1C.I9wG/6Re2UzzGOHcO6hf0y2.4PszLEXAtaMVQqiI442x0QEK','siswa'),(3,'siswa1','Siswa 1','$2y$10$dK3Brtg8eAEUGaUWoZIJeujS/BNXRtHY4.ie.1EaX8Clil7wDlkjq','siswa'),(4,'siswa2','Siswa 2','$2y$10$8tTAbZJt40YvPSyvzzCjD.VaKHXgy/iuZTxQGaKhVXS1mYIoQYcD.','siswa'),(5,'siswa3','Siswa 3','$2y$10$Y56xgFJYSl.3OgUSqAcY1OLVfxbhSpN0gs5plIw12qytYZ3.uScWq','siswa');
+INSERT INTO `users` VALUES (1,'admin','Administrator','$2y$10$2p7GZJpvIqCGg/feguG6/OkdDZReaUTeY1cRTUoKnRzSC2R65DjJe','guru',NULL),(2,'siswa','Siswa Percobaan','$2y$10$8J1C.I9wG/6Re2UzzGOHcO6hf0y2.4PszLEXAtaMVQqiI442x0QEK','siswa',NULL),(3,'siswa1','Siswa 1','$2y$10$dK3Brtg8eAEUGaUWoZIJeujS/BNXRtHY4.ie.1EaX8Clil7wDlkjq','siswa',NULL),(4,'siswa2','Siswa 2','$2y$10$8tTAbZJt40YvPSyvzzCjD.VaKHXgy/iuZTxQGaKhVXS1mYIoQYcD.','siswa',NULL),(5,'siswa3','Siswa 3','$2y$10$Y56xgFJYSl.3OgUSqAcY1OLVfxbhSpN0gs5plIw12qytYZ3.uScWq','siswa',NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
