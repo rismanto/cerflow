@@ -220,8 +220,9 @@ function saveToDB() {
     .then(data => {
         if(data.status === 'ok') {
             alert(currentMapId ? 'Map Berhasil Diperbarui!' : 'Map Baru Berhasil Disimpan!');
-            loadMaps(); 
-            newMap();
+            loadMaps().then(() => {
+                editMap(data.id);
+            });
         } else {
             alert("Gagal menyimpan: " + data.message);
         }
