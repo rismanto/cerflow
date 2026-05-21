@@ -116,6 +116,22 @@ class User {
     }
 
     /**
+     * Get user by username
+     * 
+     * @param string $username
+     * @return array|bool
+     */
+    public function getByUsername($username) {
+        $query = "SELECT id, username, namalengkap, role, gemini_api_key FROM " . $this->table_name . " WHERE username = :username LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $username = htmlspecialchars(strip_tags($username));
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+
+    /**
      * Create a new user
      * 
      * @param string $username

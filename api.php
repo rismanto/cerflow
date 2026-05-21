@@ -52,31 +52,50 @@ if ($action == 'download_template') {
     fgetcsv($handle);
     
     $userModel = new User($db);
-    $success = 0;
+    $created = 0;
+    $updated = 0;
     $errors = 0;
 
     while (($row = fgetcsv($handle)) !== FALSE) {
         if (count($row) < 4) continue;
         
-        $username = $row[0];
-        $namalengkap = $row[1];
-        $password = $row[2];
-        $role = strtolower($row[3]);
+        $username = trim($row[0]);
+        $namalengkap = trim($row[1]);
+        $password = trim($row[2]);
+        $role = strtolower(trim($row[3]));
+
+        if (empty($username)) {
+            $errors++;
+            continue;
+        }
 
         if (!in_array($role, ['guru', 'siswa'])) {
             $errors++;
             continue;
         }
 
-        if ($userModel->create($username, $namalengkap, $password, $role)) {
-            $success++;
+        $existingUser = $userModel->getByUsername($username);
+        if ($existingUser) {
+            $pass_to_update = !empty($password) ? $password : null;
+            if ($userModel->update($existingUser['id'], $username, $namalengkap, $role, $pass_to_update, $existingUser['gemini_api_key'])) {
+                $updated++;
+            } else {
+                $errors++;
+            }
         } else {
-            $errors++;
+            if ($userModel->create($username, $namalengkap, $password, $role)) {
+                $created++;
+            } else {
+                $errors++;
+            }
         }
     }
     
     fclose($handle);
-    echo json_encode(['status' => 'success', 'message' => "Imported $success users. Errors: $errors"]);
+    echo json_encode([
+        'status' => 'success', 
+        'message' => "Imported $created new users, updated $updated existing users. Errors: $errors"
+    ]);
     exit;
 }
 
