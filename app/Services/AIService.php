@@ -1,12 +1,15 @@
 <?php
+
 /**
  * AI Service - Handles communication with Google Gemini API
  */
-class AIService {
+class AIService
+{
     private $apiKey;
     private $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 
-    public function __construct($apiKey) {
+    public function __construct($apiKey)
+    {
         $this->apiKey = trim($apiKey);
     }
 
@@ -16,12 +19,14 @@ class AIService {
      * @param string $text The reading material
      * @return array|false Array of triplets or false on failure
      */
-    public function extractCER($text) {
+    public function extractCER($text)
+    {
         if (!$this->apiKey) return false;
 
         $prompt = "Extract Scientific Argumentation triplets (Claim, Evidence, Reasoning) from the following text. 
         Identify and extract ALL meaningful and logically complete triplets present in the text. 
-        Do not invent information; if a claim lacks evidence or reasoning in the text, do not include it.
+        Do not invent information; if a claim lacks evidence or reasoning in the text, do not include it. Make shorter but sharply focused Claim, Evidence, and Reasoning text.
+        Use text origin's language for the extracted CER.
         
         IMPORTANT: Your response MUST be ONLY a raw JSON array of objects. Do not include any markdown formatting, backticks, or extra text.
         Each object MUST have exactly these keys: 'claim', 'evidence', 'reasoning'.
@@ -47,7 +52,7 @@ class AIService {
             'Content-Type: application/json',
             'x-goog-api-key: ' . $this->apiKey
         ]);
-        
+
         // Bypass SSL issues for local development
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
@@ -62,10 +67,10 @@ class AIService {
         $result = json_decode($response, true);
         if (isset($result['candidates'][0]['content']['parts'][0]['text'])) {
             $jsonText = $result['candidates'][0]['content']['parts'][0]['text'];
-            
+
             // Clean up markdown if present
             $jsonText = preg_replace('/^```(?:json)?\s*|```\s*$/i', '', trim($jsonText));
-            
+
             $triplets = json_decode($jsonText, true);
             return is_array($triplets) ? $triplets : false;
         }
