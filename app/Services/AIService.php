@@ -25,7 +25,7 @@ class AIService
 
         $prompt = "Extract Scientific Argumentation triplets (Claim, Evidence, Reasoning) from the following text. 
         Identify and extract ALL meaningful and logically complete triplets present in the text. 
-        Do not invent information; if a claim lacks evidence or reasoning in the text, do not include it. Make shorter but sharply focused Claim, Evidence, and Reasoning text.
+        Do not invent information; if a claim lacks evidence or reasoning in the text, do not include it. Make a very short but sharply focused text for the Claim, Evidence, and Reasoning.
         Use text origin's language for the extracted CER.
         
         IMPORTANT: Your response MUST be ONLY a raw JSON array of objects. Do not include any markdown formatting, backticks, or extra text.
@@ -76,5 +76,56 @@ class AIService
         }
 
         return false;
+    }
+
+    /**
+     * Test the Gemini API connection
+     * 
+     * @return array Associative array with status and message
+     */
+    public function testConnection()
+    {
+        if (!$this->apiKey) {
+            return ['success' => false, 'message' => 'API Key is empty'];
+        }
+
+        $payload = [
+            "contents" => [
+                [
+                    "parts" => [
+                        ["text" => "Ping"]
+                    ]
+                ]
+            ]
+        ];
+
+        $ch = curl_init($this->apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'x-goog-api-key: ' . $this->apiKey
+        ]);
+
+        // Bypass SSL issues for local development
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            return ['success' => true, 'message' => 'Connection successful!'];
+        } else {
+            $errorMsg = 'API request failed';
+            if ($response) {
+                $resDecoded = json_decode($response, true);
+                if (isset($resDecoded['error']['message'])) {
+                    $errorMsg = $resDecoded['error']['message'];
+                }
+            }
+            return ['success' => false, 'message' => $errorMsg];
+        }
     }
 }

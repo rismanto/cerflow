@@ -22,7 +22,7 @@ $db = $database->getConnection();
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 // Auth check for certain actions
-if (in_array($action, ['save_map', 'delete_map', 'get_map', 'get_users', 'save_user', 'delete_user', 'import_users', 'download_template', 'extract_cer'])) {
+if (in_array($action, ['save_map', 'delete_map', 'get_map', 'get_users', 'save_user', 'delete_user', 'import_users', 'download_template', 'extract_cer', 'test_gemini_key'])) {
     if (!User::checkAuth('guru')) {
         echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
         exit;
@@ -227,6 +227,28 @@ if ($action == 'save_map') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Gagal mengekstraksi komponen CER. Pastikan teks berisi informasi ilmiah yang cukup dan API Key valid.']);
     }
+
+} elseif ($action == 'test_gemini_key') {
+    $apiKey = isset($data['gemini_api_key']) ? $data['gemini_api_key'] : null;
+    if (empty($apiKey)) {
+        $userModel = new User($db);
+        $apiKey = $userModel->getApiKey($_SESSION['user_id']);
+    }
+
+    if (empty($apiKey)) {
+        echo json_encode(['status' => 'error', 'message' => 'API Key tidak boleh kosong.']);
+        exit;
+    }
+
+    $aiService = new AIService($apiKey);
+    $testResult = $aiService->testConnection();
+
+    if ($testResult['success']) {
+        echo json_encode(['status' => 'success', 'message' => 'Koneksi berhasil! API Key valid.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Koneksi gagal: ' . $testResult['message']]);
+    }
+    exit;
 
 } elseif ($action == 'delete_user') {
     $userModel = new User($db);
