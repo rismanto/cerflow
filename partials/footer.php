@@ -34,6 +34,17 @@
         </div>
     </div>
 
+    <!-- Global Alert Modal -->
+    <div id="global-alert-modal" class="fixed inset-0 z-[300] bg-slate-900/85 backdrop-blur-sm items-center justify-center p-6 hidden">
+        <div class="bg-white p-8 max-w-sm w-full shadow-2xl border-2 border-slate-300 relative text-center">
+            <h2 class="text-xl font-black text-slate-800 uppercase italic mb-4">Notifikasi</h2>
+            <p id="global-alert-message" class="text-sm font-medium text-slate-600 mb-8 leading-relaxed whitespace-pre-wrap"></p>
+            <div class="flex justify-center">
+                <button id="global-alert-ok" class="bg-blue-700 text-white px-8 py-2 text-sm font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-sm">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.CustomConfirm = function(message) {
             return new Promise((resolve) => {
@@ -58,6 +69,28 @@
 
                 btnOk.addEventListener('click', onOk);
                 btnCancel.addEventListener('click', onCancel);
+            });
+        };
+
+        window.CustomAlert = function(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('global-alert-modal');
+                const msgEl = document.getElementById('global-alert-message');
+                const btnOk = document.getElementById('global-alert-ok');
+
+                msgEl.innerText = message;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                const cleanup = () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    btnOk.removeEventListener('click', onOk);
+                };
+
+                const onOk = () => { cleanup(); resolve(); };
+
+                btnOk.addEventListener('click', onOk);
             });
         };
     </script>

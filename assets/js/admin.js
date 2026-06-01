@@ -98,12 +98,15 @@ function newMap() {
 /**
  * Add a triplet to the local list
  */
-function addLocal() {
+async function addLocal() {
     const c = document.getElementById('in-c');
     const e = document.getElementById('in-e');
     const r = document.getElementById('in-r');
     
-    if(!c.value || !e.value || !r.value) return alert("Isi semua bagian triplet!");
+    if(!c.value || !e.value || !r.value) {
+        await CustomAlert("Isi semua bagian triplet!");
+        return;
+    }
 
     const tripletPayload = {
         id: editingTripletIndex !== null ? triplets[editingTripletIndex].id : null,
@@ -195,41 +198,43 @@ function removeTriplet(index) {
 /**
  * Save the map and triplets to the database
  */
-function saveToDB() {
+async function saveToDB() {
     const title = document.getElementById('map-title').value;
-    if(!title || triplets.length === 0) return alert("Judul dan Triplet harus diisi!");
+    if(!title || triplets.length === 0) {
+        await CustomAlert("Judul dan Triplet harus diisi!");
+        return;
+    }
 
-    fetch('api.php?action=save_map', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            map_id: currentMapId, 
-            title: title, 
-            triplets: triplets.map(t => ({
-                id: t.id,
-                claim: t.claim,
-                evidence: t.evidence,
-                reasoning: t.reasoning
-            })),
-            allow_feedback: document.getElementById('allow-feedback').checked ? 1 : 0,
-            allow_reading: document.getElementById('allow-reading').checked ? 1 : 0,
-            reading_text: document.getElementById('reading-text-input').value
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch('api.php?action=save_map', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                map_id: currentMapId, 
+                title: title, 
+                triplets: triplets.map(t => ({
+                    id: t.id,
+                    claim: t.claim,
+                    evidence: t.evidence,
+                    reasoning: t.reasoning
+                })),
+                allow_feedback: document.getElementById('allow-feedback').checked ? 1 : 0,
+                allow_reading: document.getElementById('allow-reading').checked ? 1 : 0,
+                reading_text: document.getElementById('reading-text-input').value
+            })
+        });
+        const data = await res.json();
         if(data.status === 'ok') {
-            alert(currentMapId ? 'Map Berhasil Diperbarui!' : 'Map Baru Berhasil Disimpan!');
-            loadMaps(); 
-            newMap();
+            await CustomAlert(currentMapId ? 'Map Berhasil Diperbarui!' : 'Map Baru Berhasil Disimpan!');
+            await loadMaps();
+            editMap(data.id);
         } else {
-            alert("Gagal menyimpan: " + data.message);
+            await CustomAlert("Gagal menyimpan: " + data.message);
         }
-    })
-    .catch(err => {
+    } catch(err) {
         console.error("Error:", err);
-        alert("Terjadi kesalahan sistem.");
-    });
+        await CustomAlert("Terjadi kesalahan sistem.");
+    }
 }
 
 /**
@@ -308,9 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 editMap(editId);
             }
         })
-        .catch(err => {
+        .catch(async err => {
             console.error("Gagal memuat daftar map:", err);
-            alert("Terjadi kesalahan saat memuat daftar map.");
+            await CustomAlert("Terjadi kesalahan saat memuat daftar map.");
         });
     
     const searchInput = document.getElementById('map-search');
@@ -332,17 +337,20 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function deleteMap(id) {
     if (await CustomConfirm("Apakah Anda yakin ingin menghapus Map ini? Semua data triplet di dalamnya akan ikut terhapus.")) {
-        fetch(`api.php?action=delete_map&map_id=${id}`, { method: 'GET' })
-        .then(res => res.json())
-        .then(data => {
+        try {
+            const res = await fetch(`api.php?action=delete_map&map_id=${id}`, { method: 'GET' });
+            const data = await res.json();
             if (data.status === 'success') {
-                alert("Map berhasil dihapus");
-                loadMaps();
+                await CustomAlert("Map berhasil dihapus");
+                await loadMaps();
                 if(currentMapId == id) newMap();
             } else {
-                alert("Gagal menghapus: " + data.message);
+                await CustomAlert("Gagal menghapus: " + data.message);
             }
-        });
+        } catch(err) {
+            console.error("Error:", err);
+            await CustomAlert("Terjadi kesalahan sistem.");
+        }
     }
 }
 
@@ -355,9 +363,9 @@ function editMap(id) {
     .then(selectedMap => {
         applyMapToEditor(selectedMap);
     })
-    .catch(err => {
+    .catch(async err => {
         console.error("Gagal memuat map:", err);
-        alert("Terjadi kesalahan saat memuat isi map.");
+        await CustomAlert("Terjadi kesalahan saat memuat isi map.");
     });
 }
 
@@ -395,9 +403,12 @@ function closeAIExtractor() {
     }
 }
 
-function runAIExtraction() {
+async function runAIExtraction() {
     const text = document.getElementById('ai-extract-input').value.trim();
-    if (!text) return alert("Tempelkan teks bacaan terlebih dahulu!");
+    if (!text) {
+        await CustomAlert("Tempelkan teks bacaan terlebih dahulu!");
+        return;
+    }
 
     const loading = document.getElementById('ai-loading');
     const btn = document.getElementById('btn-run-ai');
@@ -406,13 +417,13 @@ function runAIExtraction() {
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
-    fetch('api.php?action=extract_cer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text })
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const res = await fetch('api.php?action=extract_cer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+        });
+        const data = await res.json();
         if (data.status === 'success') {
             // 1. Update the Reading Text field
             document.getElementById('reading-text-input').value = text;
@@ -430,20 +441,18 @@ function runAIExtraction() {
             // 3. UI Updates
             render();
             closeAIExtractor();
-            alert(`Berhasil mengekstraksi ${extractedTriplets.length} komponen CER! Silakan cek daftar di bawah untuk menyesuaikannya.`);
+            await CustomAlert(`Berhasil mengekstraksi ${extractedTriplets.length} komponen CER! Silakan cek daftar di bawah untuk menyesuaikannya.`);
         } else {
-            alert("AI Error: " + data.message);
+            await CustomAlert("AI Error: " + data.message);
         }
-    })
-    .catch(err => {
+    } catch(err) {
         console.error("AI Fetch Error:", err);
-        alert("Gagal menghubungi server AI.");
-    })
-    .finally(() => {
+        await CustomAlert("Gagal menghubungi server AI.");
+    } finally {
         loading.classList.add('hidden');
         btn.disabled = false;
         btn.classList.remove('opacity-50', 'cursor-not-allowed');
-    });
+    }
 }
 
 // Initial load handled by DOMContentLoaded above
